@@ -1,0 +1,36 @@
+<Copyright: Birleanu Teodor Matei >                                                         07.12.2024                                                            
+teodor.matei.birleanu@gmail.com
+                                 TEMA 1 APD
+                           Calculul paralel al unui index inversat
+                            folosind paradigma Map-Reduce
+
+    In cele ce urmeaza voi prezenta cat mai pe scurt implementarea mea si de asemenea structurile folosite.
+    In primul rand, pentru a putea trimite printr un singur argument toate informatiile necesare 
+unui thread am impachetat acele variabile intr o structura speciala pentru thread urile care 
+realizeaza operatia de Reduce si pentru cele care realizeaza operatia de Map. Pentru ambele structuri am 
+retinut pointer la mutex si la bariera pentru si de asemenea fiecare structura va avea un camp pentur id ul 
+thread ului. 
+	Thread urile care realizeaza operatia de Map vor primi un map care contine "std::map<std::string, pair<int, int>>"
+fiecarui fisier ii va fi asignat un id si dimensiunea lui. Am realizat acest procedeu in functia store_files().
+De asemenea, va primi si un "vector<string>" care reprezinta numele fisierelor pe care trebuie sa le prelucreze.
+Aceste fisiere au fost distribuite fiecarui thread in functia make_files_split unde am sortat in functie de 
+dimensiune si le am distribuit astfel: iterand prin lista sortata de documente am asignat documentul trhead ului
+cu cel mai mic workload, astfel am realizat o distribuire statica si eficienta. De asemenea, rezultatul operatiei de Map va fi stocat
+in "std::map<std::string, set<int>>" unde fiecare fisier va avea un set de id uri de fisiere in care se regaseste.
+	Thread urile care realizeaza operatia de Reduce vor primi un pointer la lista de structuri a thread urilor
+Map pentru a accesa facil informatiile necesare. Fiecare thread va avea literele pentru care va realiza operatia
+asignate in prealabil in functia assign_letters() unde le am distribuit in mod egal. Pe langa mutex si 
+bariera, voi avea si pointer catre lista agregata care este construita ca in enunt fiecare string avand un set 
+de id uri de fisiere unde au fost gasite.Fiecare thread de Reduce va adauga in lista doar cuvintele care incep
+cu literele asignate. Dupa realizarea listei agregate, o voi parcurge si fiecare thread va prelucra doar cuvintele
+care incep cu literele asignate si le va scrie in fisiere respectand ordinea ceruta realizand comparatiile necesare.
+	Ca metode de sincronizare, am pus o bariera la finalul operatiei de Map si la inceputul operatiei de
+Reduce pentru a fi sigur ca thread urile Reduce vor incepe operatiile doar dupa ce toti Maperii si au terminat treaba.
+Intrucat fiecare mapper va scrie rezultatele intr o variabila din cadrul structurii proprii, deci nepartajata in cadrul functiei de
+Map nu am folosit mutex , singurul folosit fiind in functia de Reduce unde la adaguarea de elemente in lista agregata comuna
+am facut lock/unlock pe acea lista.
+	Toate operatiile de asignare a literelor, distribuire a fisierelor, sortarea lor dupa dimensiunea a fost realizata
+in main dupa prealuarea datelor din linia de comanda.
+	Va multumesc!
+
+                                   
